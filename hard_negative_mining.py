@@ -13,6 +13,7 @@ warnings.filterwarnings("ignore")
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
+    parser.add_argument("--model_name", type=str, default="phobert_base")
     parser.add_argument("--model_path", default="saved_model/bm25_Plus_04_06_model_full_manual_stopword", type=str)
     parser.add_argument("--sentence_bert_path", default="", type=str, help="path to round 1 sentence bert model")
     parser.add_argument("--data_path", default="zac2021-ltr-data", type=str, help="path to input data")
@@ -50,10 +51,10 @@ if __name__ == '__main__':
         embed = model.encode(v['title'] + ' ' + v['text'])
         doc_data[k]['embedding'] = embed
 
-    with open('legal_corpus_vibert_embedding.pkl', 'wb') as pkl:
+    with open(os.path.join("generated_data", f'legal_corpus_{args.model_name}_embedding.pkl'), 'wb') as pkl:
         pickle.dump(doc_data, pkl)
 
-    with open('legal_corpus_vibert_embedding.pkl', 'rb') as pkl:
+    with open(os.path.join("generated_data", f'legal_corpus_{args.model_name}_embedding.pkl'), 'rb') as pkl:
         data = pickle.load(pkl)
 
     pred_list = []
@@ -103,5 +104,5 @@ if __name__ == '__main__':
 
     save_path = args.save_path
     os.makedirs(save_path, exist_ok=True)
-    with open(os.path.join(save_path, f"save_pairs_vibert_top{top_k}.pkl"), "wb") as pair_file:
+    with open(os.path.join(save_path, f"save_pairs_{args.model_name}_top{top_k}.pkl"), "wb") as pair_file:
         pickle.dump(save_pairs, pair_file)
