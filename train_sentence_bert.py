@@ -77,7 +77,7 @@ if __name__ == '__main__':
             optimizer_params={'lr': 1e-5},
             save_best_model=True,
             evaluator=evaluator,
-            evaluation_steps=args.num_eval,
+            evaluation_steps=args.num_val,
             output_path=output_path,
             use_amp=True,
             show_progress_bar=True)
