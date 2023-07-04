@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument("--save_pair_path", default="pair_data/", type=str, help="path to save pair sentence directory")
     args = parser.parse_args()
 
-    train_path = os.path.join(args.data_path, "train_question_answer.json")
+    train_path = os.path.join(args.data_path, "for_train_question_answer.json")
     training_items = load_json(train_path)["items"]
 
     with open(args.model_path, "rb") as bm_file:

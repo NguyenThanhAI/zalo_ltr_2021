@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     # Grid_search, evaluate on training question
     # raw_data = "zac2021-ltr-data"
-    train_path = os.path.join(raw_data, "train_question_answer.json")
+    train_path = os.path.join(raw_data, "for_train_question_answer.json")
     data = json.load(open(train_path))
     items = data["items"]
     print(len(items))
