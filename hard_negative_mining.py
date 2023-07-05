@@ -24,7 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # load training data from json
-    data = json.load(open(os.path.join(args.data_path, "train_question_answer.json")))
+    data = json.load(open(os.path.join(args.data_path, "for_train_question_answer.json")))
 
     training_data = data["items"]
     print(len(training_data))
