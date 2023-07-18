@@ -30,7 +30,7 @@ if __name__ == '__main__':
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level=logging.INFO,
                         handlers=[LoggingHandler()])
-    if round == 1:
+    if args.round == 1:
         print(f"Training round 1")
         word_embedding_model = models.Transformer(args.pretrained_model, max_seq_length=args.max_seq_length)
         pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension())
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     model.fit(train_objectives=[(train_dataloader, train_loss)], 
             epochs=args.epochs, 
             warmup_steps=1000,
-            optimizer_params={'lr': 1e-5},
+            optimizer_params={'lr': args.lr},
             save_best_model=True,
             evaluator=evaluator,
             evaluation_steps=args.num_val,
