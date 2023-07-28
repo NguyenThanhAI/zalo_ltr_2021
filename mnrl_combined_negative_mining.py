@@ -100,7 +100,7 @@ if __name__ == "__main__":
         
         for article in relevant_articles:
             concat_id = article["law_id"] + "_" + article["article_id"]
-            pos_passage.append(doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"])
+            pos_passage.append({"pos_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
             break
             
         cos_sim = []
@@ -126,16 +126,21 @@ if __name__ == "__main__":
             
             check = 0
             for article in relevant_articles:
-                check += 1 if pred[0] == article["law_id"] and pred[1] == article["article_id"] else 0
+                if pred[0] == article["law_id"] and pred[1] == article["article_id"]:
+                    check += 1
+                    break
             
             if check == 0:
-                neg_passage.append(doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"])
+                concat_id = pred[0] + "_" + pred[1]
+                neg_passage.append({"neg_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
                 
                 
         for pos in pos_passage:
             for neg in neg_passage:
                 save_triplets.append({"question_id": question_id,
-                                      "triplets": (question, pos, neg)})
+                                      "pos_id": pos["pos_id"],
+                                      "neg_id": neg["neg_id"],
+                                      "triplets": (question, pos["passage"], neg["passage"])})
     
     os.makedirs(save_dir, exist_ok=True)
     with open(os.path.join(save_dir, f"save_mnrl_combined_triplets_top{top_k}.pkl"), "wb") as triplet_file:
