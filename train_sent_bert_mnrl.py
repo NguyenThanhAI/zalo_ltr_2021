@@ -63,10 +63,10 @@ if __name__ == "__main__":
         else:
             sent1.append(query)
             sent2.append(pos)
-            scores.append(1)
+            scores.append(float(1))
             sent1.append(query)
             sent2.append(neg)
-            scores.append(0)
+            scores.append(float(0))
             
     print("Number of sample for training: ", len(train_examples))
     
@@ -87,4 +87,5 @@ if __name__ == "__main__":
               evaluation_steps=args.num_val,
               output_path=output_path,
               use_amp=True,
-              show_progress_bar=True)
+              show_progress_bar=True,
+              collate_fn=model.smart_batching_collate)
