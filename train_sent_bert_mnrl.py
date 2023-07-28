@@ -70,7 +70,7 @@ if __name__ == "__main__":
             
     print("Number of sample for training: ", len(train_examples))
     
-    train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=args.batch_size)
+    train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=args.batch_size, collate_fn=model.smart_batching_collate)
     train_loss = losses.MultipleNegativesRankingLoss(model=model)
     
     output_path = args.saved_model
@@ -87,5 +87,4 @@ if __name__ == "__main__":
               evaluation_steps=args.num_val,
               output_path=output_path,
               use_amp=True,
-              show_progress_bar=True,
-              collate_fn=model.smart_batching_collate)
+              show_progress_bar=True)
