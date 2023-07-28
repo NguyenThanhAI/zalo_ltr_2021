@@ -78,7 +78,7 @@ if __name__ == "__main__":
     
     evaluator = evaluation.EmbeddingSimilarityEvaluator(sent1, sent2, scores)
     
-    model.fit(train_objectives=[train_dataloader, train_loss],
+    model.fit(train_objectives=[(train_dataloader, train_loss)],
               epochs=args.epochs,
               warmup_steps=1000,
               optimizer_params={'lr': args.lr},
