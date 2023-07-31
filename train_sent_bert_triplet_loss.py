@@ -69,13 +69,13 @@ if __name__ == "__main__":
         else:
             sent1.append(query)
             sent2.append(pos_sent)
-            scores.append(1)
+            scores.append(float(1))
             
             for neg in triplet["negative"]:
                 sent1.append(query)
                 neg_sent = neg["passage"]
                 sent2.append(neg_sent)
-                scores.append(0)
+                scores.append(float(0))
                 
     print("Number of sample for training: ", len(train_examples))
     
