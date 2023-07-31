@@ -79,8 +79,8 @@ if __name__ == "__main__":
                 
     print("Number of sample for training: ", len(train_examples))
     
-    train_dataset = SentencesDataset(train_examples)
-    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size, collate_fn=model.smart_batching_collate)
+    train_dataset = SentencesDataset(train_examples, model)
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
     if args.metric_type.lower() == "cosine":
         distance_metric = losses.TripletDistanceMetric.COSINE
     elif args.metric_type.lower() == "euclidean":
