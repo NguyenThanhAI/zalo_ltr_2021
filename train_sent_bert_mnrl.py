@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
             for neg in triplet["negative"]:
                 neg_sent = neg["passage"]
-                example = InputExample([query, pos_sent, neg_sent])
+                example = InputExample(texts=[query, pos_sent, neg_sent])
                 train_examples.append(example)
         else:
             sent1.append(query)
