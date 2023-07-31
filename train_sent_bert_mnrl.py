@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_seq_length", default=256, type=int, help="maximum sequence length")
     parser.add_argument("--triplet_data_path", type=str, default="", help="path to saved pair data")
     parser.add_argument("--round", default=1, type=int, help="training round ")
-    parser.add_argument("--num_val", default=2500, type=int, help="number of eval data")
+    parser.add_argument("--num_val", default=200, type=int, help="number of eval data")
     parser.add_argument("--epochs", default=5, type=int, help="Number of training epochs")
     parser.add_argument("--saved_model", default="", type=str, help="path to savd model directory.")
     parser.add_argument("--batch_size", type=int, default=32, help="batch size")
@@ -56,17 +56,25 @@ if __name__ == "__main__":
     num_train = len(save_triplets) - args.num_val
     
     for idx, triplet in enumerate(save_triplets):
-        query, pos, neg = triplet["triplets"]
-        if idx <= num_train:
-            example = InputExample(texts=[query, pos, neg])
-            train_examples.append(example)
+        query = triplet["passage"]
+        pos_sent = triplet["positive"]["passage"]
+        if idx < num_train:
+
+            for neg in triplet["negative"]:
+                neg_sent = neg["passage"]
+                example = InputExample([query, pos_sent, neg_sent])
+                train_examples.append(example)
         else:
             sent1.append(query)
-            sent2.append(pos)
-            scores.append(float(1))
-            sent1.append(query)
-            sent2.append(neg)
-            scores.append(float(0))
+            sent2.append(pos_sent)
+            scores.append(1)
+            
+            for neg in triplet["negative"]:
+                sent1.append(query)
+                neg_sent = neg["passage"]
+                sent2.append(neg_sent)
+                scores.append(0)
+        
             
     print("Number of sample for training: ", len(train_examples))
     
@@ -76,7 +84,8 @@ if __name__ == "__main__":
     output_path = args.saved_model
     os.makedirs(output_path, exist_ok=True)
     
-    evaluator = evaluation.EmbeddingSimilarityEvaluator(sent1, sent2, scores)
+    #evaluator = evaluation.EmbeddingSimilarityEvaluator(sent1, sent2, scores)
+    evaluator = evaluation.BinaryClassificationEvaluator(sent1, sent2, scores)
     
     model.fit(train_objectives=[(train_dataloader, train_loss)],
               epochs=args.epochs,
@@ -84,7 +93,7 @@ if __name__ == "__main__":
               optimizer_params={'lr': args.lr},
               save_best_model=True,
               evaluator=evaluator,
-              evaluation_steps=args.num_val,
+              evaluation_steps=1000,
               output_path=output_path,
               use_amp=True,
               show_progress_bar=True)
