@@ -8,6 +8,8 @@ import argparse
 import os
 #### Just some code to print debug information to stdout
 
+logging.disable(logging.WARNING)
+
 def load_pair_data(pair_data_path):
     with open(pair_data_path, "rb") as pair_file:
         pairs = pickle.load(pair_file)
