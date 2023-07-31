@@ -83,11 +83,13 @@ if __name__ == "__main__":
         model = load_model(model_dir=model_dir, model_path=model_path)
         question_emb_dict[model_path] = encode_question(questions=items, model=model)
         
-    weights = [0.35, 0.15, 0.35, 0.15]
+    weights = [0.25, 0.25, 0.125, 0.25, 0.125]
     
     save_triplets = []
     
     for idx, item in tqdm(enumerate(items)):
+        infos = {}
+        
         question_id = item["question_id"]
         question = item["question"]
         relevant_articles = item["relevant_articles"]
@@ -96,11 +98,17 @@ if __name__ == "__main__":
         # tokenized_query = bm25_tokenizer(question)
         # doc_scores = bm25.get_scores(tokenized_query)
         
-        pos_passage = []
+        infos["id"] = question_id
+        infos["passage"] = question
+        infos["positive"] = {}
+        infos["negative"] = []
+        
         
         for article in relevant_articles:
             concat_id = article["law_id"] + "_" + article["article_id"]
-            pos_passage.append({"pos_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+            #pos_passage.append({"pos_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+            infos["positive"]["id"] = concat_id
+            infos["positive"]["passage"] = doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]
             break
             
         cos_sim = []
@@ -119,7 +127,6 @@ if __name__ == "__main__":
         new_scores = cos_sim
         predictions = np.argpartition(new_scores, len(new_scores) - top_k)[-top_k:]
         
-        neg_passage = []
         
         for idx_2, idx_pred in enumerate(predictions):
             pred = doc_refers[idx_pred]
@@ -132,15 +139,12 @@ if __name__ == "__main__":
             
             if check == 0:
                 concat_id = pred[0] + "_" + pred[1]
-                neg_passage.append({"neg_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+                #neg_passage.append({"neg_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+                infos["negative"].append({"id": concat_id,
+                                          "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
                 
+        save_triplets.append(infos)
                 
-        for pos in pos_passage:
-            for neg in neg_passage:
-                save_triplets.append({"question_id": question_id,
-                                      "pos_id": pos["pos_id"],
-                                      "neg_id": neg["neg_id"],
-                                      "triplets": (question, pos["passage"], neg["passage"])})
     
     os.makedirs(save_dir, exist_ok=True)
     with open(os.path.join(save_dir, f"save_mnrl_combined_triplets_top{top_k}.pkl"), "wb") as triplet_file:

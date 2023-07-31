@@ -63,16 +63,23 @@ if __name__ == '__main__':
     save_triplets = []
     
     for idx, item in tqdm(enumerate(training_data)):
+        infos = {}
+        
         question_id = item["question_id"]
         question = item["question"]
         relevant_articles = item["relevant_articles"]
         actual_positive = len(relevant_articles)
         
-        pos_passage = []
+        infos["id"] = question_id
+        infos["passage"] = question
+        infos["positive"] = {}
+        infos["negative"] = []
         
         for article in relevant_articles:
             concat_id = article["law_id"] + "_" + article["article_id"]
-            pos_passage.append({"pos_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+            #pos_passage.append({"pos_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+            infos["positive"]["id"] = concat_id
+            infos["positive"]["passage"] = doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]
             break
             
         encoded_question  = model.encode(question)
@@ -87,7 +94,6 @@ if __name__ == '__main__':
         all_cosine = util.cos_sim(encoded_question, matrix_emb).numpy().squeeze(0)
         predictions = np.argpartition(all_cosine, len(all_cosine) - top_k)[-top_k:]
         
-        neg_passage = []
         
         for idx_2, idx_pred in enumerate(predictions):
             pred = doc_refers[idx_pred]
@@ -100,14 +106,12 @@ if __name__ == '__main__':
             
             if check == 0:
                 concat_id = pred[0] + "_" + pred[1]
-                neg_passage.append({"neg_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
-                
-        for pos in pos_passage:
-            for neg in neg_passage:
-                save_triplets.append({"question_id": question_id,
-                                      "pos_id": pos["pos_id"],
-                                      "neg_id": neg["neg_id"],
-                                      "triplets": (question, pos["passage"], neg["passage"])})
+                #neg_passage.append({"neg_id": concat_id, "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+                infos["negative"].append({"id": concat_id,
+                                          "passage": doc_data[concat_id]["title"] + " " + doc_data[concat_id]["text"]})
+        
+        save_triplets.append(infos)    
+        
                 
                 
     save_path = args.save_path
