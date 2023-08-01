@@ -24,6 +24,7 @@ if __name__ == '__main__':
     parser.add_argument("--saved_model", default="", type=str, help="path to savd model directory.")
     parser.add_argument("--batch_size", type=int, default=32, help="batch size")
     parser.add_argument("--lr", type=float, default=1e-5, help="learning rate for training")
+    parser.add_argument("--margin", type=float, default=0.5)
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s - %(message)s',
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     print("Number of sample for training: ", len(train_examples))
 
     train_dataloader = DataLoader(train_examples, shuffle=True, batch_size=args.batch_size)
-    train_loss = losses.ContrastiveLoss(model)
+    train_loss = losses.ContrastiveLoss(model, margin=args.margin)
 
     output_path = args.saved_model
     os.makedirs(output_path, exist_ok=True)
