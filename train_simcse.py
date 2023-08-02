@@ -14,7 +14,7 @@ def load_legal(legal_dict_json):
         doc_data = json.load(f)
     
     train_data = []
-    
+    print("Num length of dataset: {}".format(len(doc_data)))
     for k, doc in doc_data.items():
         sent = doc_data[k]["title"] + " " + doc_data[k]["text"]
         train_data.append(InputExample(texts=[sent, sent]))
@@ -28,12 +28,10 @@ if __name__ == '__main__':
     parser.add_argument("--pretrained_model", default="", type=str, help="path to your language model")
     parser.add_argument("--max_seq_length", default=256, type=int, help="maximum sequence length")
     parser.add_argument("--legal_dict_json", type=str, default="", help="path to saved pair data")
-    parser.add_argument("--num_val", default=2500, type=int, help="number of eval data")
     parser.add_argument("--epochs", default=5, type=int, help="Number of training epochs")
     parser.add_argument("--saved_model", default="", type=str, help="path to savd model directory.")
     parser.add_argument("--batch_size", type=int, default=32, help="batch size")
     parser.add_argument("--lr", type=float, default=1e-5, help="learning rate for training")
-    parser.add_argument("--margin", type=float, default=0.5)
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s - %(message)s',
