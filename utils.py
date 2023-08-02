@@ -6,6 +6,7 @@ import json
 from typing import List, Dict
 import pickle
 from sentence_transformers import SentenceTransformer
+from sentence_transformers.cross_encoder import CrossEncoder
 from rank_bm25 import *
 from tqdm import tqdm
 
@@ -82,3 +83,12 @@ def load_encoded_legal_data(legal_data_path):
     with open(legal_data_path, "rb") as f:
         emb_legal_data = pickle.load(f)
     return emb_legal_data
+
+
+def load_cross_encoder(model_path: str) -> CrossEncoder:
+    #model_path = os.path.join(model_dir, model_path)
+    model = CrossEncoder(model_name=model_path,
+                         num_labels=1,
+                         max_length=256)
+    
+    return model
